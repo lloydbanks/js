@@ -34,7 +34,7 @@ function _createModal({
       <div class="modal-overlay" data-close="${closable}">
           <div class="modal-content" style="${width}">
               <div class="modal-header">
-                  <h5 class="modal-title">${title}</h5>
+                  <h5 class="modal-title" data-title>${title}</h5>
                   ${
                     closable
                       ? `<span class="modal-close" data-close="${closable}">&times;</span>`
@@ -95,6 +95,9 @@ $.modal = function(options = {}) {
       $modal.parentNode.removeChild($modal)
       $modal.removeEventListener('click', listener)
       destroyed = true
+    },
+    setTitle(title) {
+      $modal.querySelector('[data-title]').innerHTML = title
     },
     setContent(content) {
       $modal.querySelector('[data-content]').innerHTML = content

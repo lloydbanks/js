@@ -25,7 +25,7 @@ const products = [
   }
 ]
 
-const toHTML = ({ title, text, img }) => {
+const toHTML = ({ title, text, img, id }) => {
   const template = `
     <div class="col-4">
         <div class="card">
@@ -33,8 +33,8 @@ const toHTML = ({ title, text, img }) => {
             <div class="card-body">
                 <h5 class="card-title">${title}</h5>
                 <p class="card-text">${text}</p>
-                <a href="#" class="btn btn-primary">Show more</a>
-                <a href="#" class="btn btn-danger">Delete</a>
+                <a href="javascript:;" class="btn btn-primary" data-modal="showMore" data-id="${id}">Show more</a>
+                <a href="javascript:;" class="btn btn-danger">Delete</a>
             </div>
         </div>
     </div>`
@@ -49,29 +49,31 @@ const render = () => {
 
 render()
 
-const modal = $.modal({
-  title: 'first title',
+const detailModal = $.modal({
   closable: true,
-  content:
-    '<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Culpa et eum in ipsam laboriosam, molestias nihil nisi porro quo sint!</p>',
   width: '400px',
   buttons: [
     {
-      text: 'Ok',
+      text: 'Close',
       type: 'primary',
       handler() {
-        modal.setContent('Ok clicked')
-      }
-    },
-    {
-      text: 'Cancel',
-      type: 'danger',
-      handler: function() {
-        modal.close()
+        detailModal.close()
       }
     }
   ]
 })
 
-const openModal = document.querySelector('#openModal')
-openModal.onclick = modal.open
+const openModal = ({ target }) => {
+  if (!target.dataset.modal) return
+
+  const { id } = target.dataset
+  const { title, price } = products.find(p => p.id === +id)
+
+  detailModal.setTitle(title)
+  detailModal.setContent(`<p>Price: ${price}</p>`)
+
+  detailModal.open()
+}
+
+const $content = document.querySelector('#content')
+$content.addEventListener('click', openModal)
