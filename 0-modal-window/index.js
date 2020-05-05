@@ -1,4 +1,4 @@
-const products = [
+let products = [
   {
     id: 1,
     title: 'sunt aut facere repellat',
@@ -26,20 +26,19 @@ const products = [
 ]
 
 const toHTML = ({ title, text, img, id }) => {
-  const template = `
-    <div class="col-4">
+  const template = `<div class="col-4">
         <div class="card">
             <img src="${img}" class="card-img-top">
             <div class="card-body">
                 <h5 class="card-title">${title}</h5>
                 <p class="card-text">${text}</p>
                 <a href="javascript:;" class="btn btn-primary" data-modal="showMore" data-id="${id}">Show more</a>
-                <a href="javascript:;" class="btn btn-danger">Delete</a>
+                <a href="javascript:;" class="btn btn-danger" data-modal="delete" data-id="${id}">Delete</a>
             </div>
         </div>
     </div>`
 
-  return template.trim()
+  return template
 }
 
 const render = () => {
@@ -64,15 +63,30 @@ const detailModal = $.modal({
 })
 
 const openModal = ({ target }) => {
-  if (!target.dataset.modal) return
+  const modal = target.dataset.modal
+  if (!modal) return
 
-  const { id } = target.dataset
-  const { title, price } = products.find(p => p.id === +id)
+  const id = +target.dataset.id
+  const { title, price } = products.find(p => p.id === id)
 
-  detailModal.setTitle(title)
-  detailModal.setContent(`<p>Price: ${price}</p>`)
+  if (modal === 'showMore') {
+    detailModal.setTitle(title)
+    detailModal.setContent(`<p>Price: ${price}</p>`)
 
-  detailModal.open()
+    detailModal.open()
+  } else if (modal === 'delete') {
+    $.confirm({
+      title: 'Are you sure?',
+      content: `<p>Product id#${id} will be deleted</p>`
+    })
+      .then(_ => {
+        products = products.filter(product => product.id !== id)
+        render()
+      })
+      .catch(_ => {
+        console.log('cancel')
+      })
+  }
 }
 
 const $content = document.querySelector('#content')

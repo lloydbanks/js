@@ -68,8 +68,6 @@ $.modal = function(options = {}) {
       !closing && $modal.classList.add('open')
     },
     close() {
-      if (typeof onClose === 'function') onClose()
-
       closing = true
       $modal.classList.remove('open')
       $modal.classList.add('closing')
@@ -77,6 +75,7 @@ $.modal = function(options = {}) {
       setTimeout(() => {
         $modal.classList.remove('closing')
         closing = false
+        if (typeof onClose === 'function') onClose()
       }, ANIMATION_SPEED)
     }
   }
